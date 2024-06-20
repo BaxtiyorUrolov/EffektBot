@@ -129,7 +129,7 @@ func handleStartCommand(msg *tgbotapi.Message, db *sql.DB, botInstance *tgbotapi
 
 	log.Printf("Checking subscription for user %d", chatID)
 	if isUserSubscribedToChannels(chatID, channels, botInstance) {
-		msg := tgbotapi.NewMessage(chatID, "Assalomu alaykum, botimizga xush kelibsiz!")
+		msg := tgbotapi.NewMessage(chatID, "🇺🇿 UZ Yangiliklar @MRC_groupuz \n\n Assalomu Alaykum kerakli boʻlimni tanlang ✅ \n\n➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖ \n\n 🇷🇺 RUS Новости @MRC_groupuz \n\n Здравствуйте, Выберите раздел в соответствии  ✅ \n\n admin: @MRC_Admin")
 		effectButton := tgbotapi.NewInlineKeyboardButtonData("🎆 Rasmga effekt", "apply_effect_19914101")
 		newsButton := tgbotapi.NewInlineKeyboardButtonData("🆕 Yangiliklar", "news")
 		var inlineKeyboard tgbotapi.InlineKeyboardMarkup

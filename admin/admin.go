@@ -46,8 +46,17 @@ func HandleAdminCommand(msg *tgbotapi.Message, db *sql.DB, botInstance *tgbotapi
 }
 
 func HandleChannelLink(msg *tgbotapi.Message, db *sql.DB, botInstance *tgbotapi.BotAPI) {
+
+
 	chatID := msg.Chat.ID
 	channelLink := msg.Text
+
+
+	if !storage.IsAdmin(int(chatID), db) {
+		msgResponse := tgbotapi.NewMessage(chatID, "Siz admin emassiz.")
+		botInstance.Send(msgResponse)
+		return
+	}
 
 	err := storage.AddChannelToDatabase(db, channelLink)
 	if err != nil {
@@ -62,6 +71,12 @@ func HandleChannelLink(msg *tgbotapi.Message, db *sql.DB, botInstance *tgbotapi.
 }
 
 func DeleteChannel(chatID int64, messageID int, channel string, db *sql.DB, botInstance *tgbotapi.BotAPI) {
+
+
+	if !storage.IsAdmin(int(chatID), db) {
+		return
+	}
+
 	err := storage.DeleteChannelFromDatabase(db, channel)
 	if err != nil {
 		log.Printf("Error deleting channel from database: %v", err)
@@ -75,6 +90,7 @@ func DeleteChannel(chatID int64, messageID int, channel string, db *sql.DB, botI
 }
 
 func CancelChannelDeletion(chatID int64, messageID int, botInstance *tgbotapi.BotAPI) {
+
 	msgResponse := tgbotapi.NewMessage(chatID, "Kanal o'chirish bekor qilindi.")
 	botInstance.Send(msgResponse)
 
@@ -84,7 +100,13 @@ func CancelChannelDeletion(chatID int64, messageID int, botInstance *tgbotapi.Bo
 }
 
 func HandleAdminAdd(msg *tgbotapi.Message, db *sql.DB, botInstance *tgbotapi.BotAPI) {
+	
 	chatID := msg.Chat.ID
+
+	if !storage.IsAdmin(int(chatID), db) {
+		return
+	}
+
 	adminID, err := strconv.ParseInt(msg.Text, 10, 64)
 	if err != nil {
 		log.Printf("Error parsing admin ID: %v", err)
@@ -107,6 +129,11 @@ func HandleAdminAdd(msg *tgbotapi.Message, db *sql.DB, botInstance *tgbotapi.Bot
 
 func HandleAdminRemove(msg *tgbotapi.Message, db *sql.DB, botInstance *tgbotapi.BotAPI) {
 	chatID := msg.Chat.ID
+
+	if !storage.IsAdmin(int(chatID), db) {
+		return
+	}
+
 	adminID, err := strconv.ParseInt(msg.Text, 10, 64)
 	if err != nil {
 		log.Printf("Error parsing admin ID: %v", err)
@@ -167,6 +194,10 @@ func AskForChannelDeletionConfirmation(chatID int64, messageID int, channel stri
 func HandleStatistics(msg *tgbotapi.Message, db *sql.DB, botInstance *tgbotapi.BotAPI) {
 	chatID := msg.Chat.ID
 
+	if !storage.IsAdmin(int(chatID), db) {
+		return
+	}
+
 	// Fetch user statistics from the database
 	totalUsers, err := storage.GetTotalUsers(db)
 	if err != nil {
@@ -204,6 +235,11 @@ func HandleStatistics(msg *tgbotapi.Message, db *sql.DB, botInstance *tgbotapi.B
 
 func HandleBroadcastMessage(msg *tgbotapi.Message, db *sql.DB, botInstance *tgbotapi.BotAPI) {
 	chatID := msg.Chat.ID
+
+	if !storage.IsAdmin(int(chatID), db) {
+		return
+	}
+
 	if msg.Text == "/cancel" {
 		msgResponse := tgbotapi.NewMessage(chatID, "Habar yuborish bekor qilindi.")
 		botInstance.Send(msgResponse)
